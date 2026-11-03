@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 
 require_once __DIR__ . '/includes/cabecalho.php'; ?>
@@ -29,7 +29,7 @@ require_once __DIR__ . '/includes/cabecalho.php'; ?>
             </a>
         </article>
     </div>
-    
+
 </div>
 
 <?php
