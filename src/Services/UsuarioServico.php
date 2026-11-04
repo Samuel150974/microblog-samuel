@@ -6,6 +6,7 @@ use Microblog\Models\Usuario;
 use Exception;
 use Microblog\Database\ConexaoBD;
 use Microblog\Helpers\Utils;
+use Microblog\Enums\TipoUsuario;
 use PDO;
 use PDOException;
 
@@ -53,7 +54,7 @@ final class UsuarioServico
             $consulta->bindValue(":nome", $usuario->getNome());
             $consulta->bindValue(":email", $usuario->getEmail());
             $consulta->bindValue(":senha", $usuario->getSenha());
-            $consulta->bindValue(":tipo", $usuario->getTipousuario());
+            $consulta->bindValue(":tipo", $usuario->getTipousuario()->value);
         } catch (PDOException $e) {
             Utils::registrarLog($e);
             throw new Exception("Erro ao inserir usuário");
