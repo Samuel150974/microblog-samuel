@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
         $usuarioServico->inserir($usuario);
 
         // Redirecionar para a página usuarios.php
-        header("location::usuarios.php");
+        header("location:usuarios.php");
         exit;
     } catch (InvalidArgumentException $e) {
         // Primeiro catch: para erros de validação 
