@@ -16,40 +16,55 @@ $email = "";
 $tipo = "editor"; // valor padrão conforme formulário
 
 if ($_SERVER['REQUEST_METHOD'] === "POST") {
-    /* Normaliza as entradas de dados do formulário para minimizar problemas de segurança   */
-    $nome = Utils::normalizarEntrada($_POST["nome"] ?? "");
-    $email = Utils::normalizarEntrada($_POST["email"] ?? "", 'email');
-    $senhaBruta = $_POST['senha'];
-    $tipo = Utils::normalizarEntrada($_POST['tipo'] ?? "");
+    try {
+        /* Normaliza as entradas de dados do formulário para minimizar problemas de segurança   */
+        $nome = Utils::normalizarEntrada($_POST["nome"] ?? "");
+        $email = Utils::normalizarEntrada($_POST["email"] ?? "", 'email');
+        $senhaBruta = $_POST['senha'];
+        $tipo = Utils::normalizarEntrada($_POST['tipo'] ?? "");
 
 
-    /* Aplica validações aos valores dos campos do formulário */
+        /* Aplica validações aos valores dos campos do formulário */
 
-    Validacoes::validarNome($nome);
-    Validacoes::validarEmail($email);
-    Validacoes::validarSenha($senhaBruta);
-    Validacoes::validarTipo($tipo);
+        Validacoes::validarNome($nome);
+        Validacoes::validarEmail($email);
+        Validacoes::validarSenha($senhaBruta);
+        Validacoes::validarTipo($tipo);
 
-    /* Se todas as validações passarem: */
+        /* Se todas as validações passarem: */
 
-    // Codificar a senha
-    $senha = Utils::codificarSenha($senhaBruta);
+        // Codificar a senha
+        $senha = Utils::codificarSenha($senhaBruta);
 
-    // Converter a string do tipo de usuário (vindo do formulário) para o ENUM
-    $tipoEnum = TipoUsuario::from($tipo);
+        // Converter a string do tipo de usuário (vindo do formulário) para o ENUM
+        $tipoEnum = TipoUsuario::from($tipo);
 
-    // Criar um objeto Usuario com os dados normalizados e validados
-    $usuario = new Usuario($nome, $email, $senha, $tipoEnum);
+        // Criar um objeto Usuario com os dados normalizados e validados
+        $usuario = new Usuario($nome, $email, $senha, $tipoEnum);
 
-    // Criar um serviço para usuario
-    $usuarioServico = new UsuarioServico();
+        // Criar um serviço para usuario
+        $usuarioServico = new UsuarioServico();
 
-    // Inserir o usuário através do serviço
-    $usuarioServico->inserir($usuario);
+        // Inserir o usuário através do serviço
+        $usuarioServico->inserir($usuario);
 
-    // Redirecionar para a página usuarios.php
-    header("location::usuarios.php");
-    exit;
+        // Redirecionar para a página usuarios.php
+        header("location::usuarios.php");
+        exit;
+    } catch (InvalidArgumentException $e) {
+        // Primeiro catch: para erros de validação 
+        // Exemplos: nome inválido, e-mail incorreto, senha inadequada etc.
+        $mensagemErro = $e->getMessage();
+        } catch (Throwable $e) {
+            // Segundo catch: para exceções e erros inesperados.
+
+            // Regristramos no log
+            Utils::registrarLog($e);
+
+            // Definimos uma mensagem genérica ao usuário
+            $mensagemErro = "Não foi possível cadastrar o usuário. Tente novamente.";
+        }
+        
 }
 
 
