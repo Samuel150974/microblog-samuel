@@ -6,13 +6,11 @@ use Microblog\Services\UsuarioServico;
 require_once __DIR__ . '/../vendor/autoload.php';
 
 
-
-$dadosUsuario = 'nome';
-
-$dadosUsuario = 'email';
-
-
-$dadosUsuario = 'senha';
+/* Inicializa variáveis para armazenar os valores do formulário,
+usando os dados do usuário (se disponíveis) */
+$nome = $dadosUsuario['nome'] ?? "";
+$email = $dadosUsuario['email'] ?? "";
+$tipo = $dadosUsuario['tipo'] ?? "";
 
 
 // Normaliza o valor do id recebido via parâmetro de URL
