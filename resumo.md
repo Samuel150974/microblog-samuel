@@ -1,33 +1,22 @@
-# Resumo do histórico da branch
+Resumo do histórico da branch
+Branch analisada: 03_aula-0511
 
-## Contexto
+Período dos commits: 03/11/2026 a 05/11/2026
 
-Este resumo considera os commits da branch `01_aula_0311''` que não estão em `main`, até o commit `82a32ad` (03/11/2026). Nesse intervalo foram identificados quatro commits, com foco na organização das classes PHP e na listagem de usuários no painel administrativo.
+Principais pontos trabalhados
+Estrutura inicial do Microblog (8d19eeb)
+Foi criado o portal didático em PHP para notícias, com áreas pública e administrativa, telas e operações de gestão, conexão PDO com MySQL/MariaDB, modelos, enums, helpers, materiais SQL e conteúdo inicial.
 
-## Principais pontos trabalhados
+Namespaces e autoload do Composer (bdc25f5)
+Foi configurado o mapeamento PSR-4 Microblog\\ para src/, adicionados namespaces às classes e enums e incluído vendor/ no .gitignore.
 
-### Autoload e organização do código
+Serviço e listagem de usuários (b248e13, c3d5740, e01e6e1, 51926b1, 8398959, 651b4a0) Foi criado UsuarioServico, ligado à conexão compartilhada do banco, e implementada a consulta de usuários na tabela usuarios. A área administrativa passou a exibir os registros reais, com contagem dinâmica e escape dos valores. Falhas no carregamento são registradas no log e apresentadas ao usuário por uma mensagem genérica.
 
-- Foi adicionada a configuração do Composer para autoload PSR-4, associando o namespace `Microblog\` à pasta `src/`.
-- Os arquivos de modelos, enums e helpers passaram a declarar namespaces, com os imports necessários entre essas classes.
-- A pasta `vendor/` foi incluída no `.gitignore`, evitando versionar as dependências e arquivos gerados pelo Composer.
+Cadastro de usuários (dffba45, 1465307, 5d7c2b8, 7e83f75, 3d1542e) O serviço ganhou inserir(Usuario $usuario), usando parâmetros preparados e os dados obtidos pelos getters do modelo. O ID do modelo Usuario passou a ser anulável e opcional, para permitir a criação de contas sem ID prévio. O formulário administrativo normaliza e valida nome, e-mail, senha e tipo de conta; codifica a senha, converte o tipo para TipoUsuario e persiste o novo usuário. Em caso de sucesso, redireciona à listagem; erros de validação são exibidos e falhas inesperadas são registradas e comunicadas com mensagem genérica. Os campos de nome, e-mail e tipo são preservados após erros, e os valores apresentados são escapados.
 
-### Serviço de usuários
+Busca e preenchimento do formulário de edição (c23e544, 40ffeb8, 42f533a) UsuarioServico ganhou buscarPorId(int $id), que consulta os dados da conta e retorna null quando não encontra registro; falhas de banco são registradas e convertidas em erro genérico. A página de edição normaliza e verifica o ID recebido pela URL, carrega a conta, informa quando não há usuário e preenche nome, e-mail e tipo com os dados encontrados, escapando os valores exibidos.
 
-- Foi criado `UsuarioServico`, responsável por obter a conexão com o banco de dados e listar usuários.
-- O método `listarTodos()` consulta os campos `id`, `nome`, `email` e `tipo` na tabela `usuarios`, ordenando o resultado pelo nome.
-- Falhas de consulta são registradas no log e convertidas em uma mensagem de erro amigável para a camada de apresentação.
+Atualização de usuários (8b6ee29, 4aea467, d578a5f) UsuarioServico ganhou o método atualizar(Usuario $usuario), que persiste nome, e-mail, senha e tipo por meio de uma instrução preparada e registra falhas de banco. O formulário de edição passou a processar envios POST, normalizar e validar nome, e-mail e tipo, criar o modelo e chamar o serviço; em caso de sucesso, redireciona à listagem. A senha atual é mantida quando o campo fica em branco. Quando preenchida, a nova senha é validada; se for igual à atual, mantém-se o hash existente, e, se diferente, é armazenada codificada. Erros de validação são apresentados, e falhas inesperadas são registradas e comunicadas com mensagem genérica.
 
-### Painel administrativo
-
-- A página de usuários deixou de exibir linhas estáticas de exemplo e passou a carregar os dados por meio do serviço.
-- O contador do painel agora reflete a quantidade retornada pela consulta.
-- A página apresenta uma mensagem quando ocorre erro ao carregar os usuários e escapa valores exibidos no HTML.
-- As ações de atualizar e excluir continuam disponíveis para cada usuário listado.
-
-## Commits considerados
-
-1. `f101f9c` — Adicionar autoloading PSR-4 do Composer.
-2. `0a5c5ab` — Adiciona serviço de usuário.
-3. `d46b48a` — Adicionar listagem de usuário com tratamento de erros.
-4. `82a32ad` — Listar usuários dinamicamente no painel de administração.
+Estado resultante
+A branch inclui listagem e cadastro persistidos de usuários, além do fluxo de edição que busca os dados existentes, valida as alterações e as persiste. As senhas em branco permanecem inalteradas; novas senhas são validadas e codificadas. Falhas técnicas na listagem, no cadastro, na busca ou na atualização são registradas no log e apresentadas ao usuário por mensagens apropriadas.
