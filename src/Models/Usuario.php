@@ -1,8 +1,14 @@
 <?php
 
-class Usuario
+
+namespace Microblog\Models;
+
+use Microblog\Enums\TipoUsuario;
+
+final class Usuario
 {
-    private int $id;
+    // Null
+    private ?int $id; 
     private string $nome;
     private string $email;
     private string $senha;
@@ -13,7 +19,7 @@ class Usuario
         string $email,
         string $senha,
         TipoUsuario $tipo = TipoUsuario::EDITOR,
-        int $id
+        ?int $id = null // parâmetro opcional e com valor padrão null
     ) {
         $this->nome = $nome;
         $this->email = $email;
@@ -28,7 +34,7 @@ class Usuario
         return $this->tipo;
     }
 
-    public function getId(): ?int
+    public function getId(): ?int // pode retornar int OU null
     {
         return $this->id;
     }
