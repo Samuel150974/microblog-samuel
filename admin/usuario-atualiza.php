@@ -5,9 +5,11 @@ use Microblog\Helpers\Utils;
 use Microblog\Helpers\Validacoes;
 use Microblog\Models\Usuario;
 use Microblog\Services\UsuarioServico;
+use Microblog\Auth\ControleDeAcesso;
 
 require_once __DIR__ . '/../vendor/autoload.php'; 
 
+ControleDeAcesso::exigirAdmin();
 // Inicializar variáveis para mensagem de erro e dados do usuário
 $mensagemErro = "";
 $dadosUsuario = null;

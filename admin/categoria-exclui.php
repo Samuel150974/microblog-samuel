@@ -2,6 +2,8 @@
 use Microblog\Helpers\Utils;
 
 use Microblog\Services\CategoriaServico;
+use Microblog\Auth\ControleDeAcesso;
+ControleDeAcesso::exigirAdmin();
 
 
 require_once __DIR__ . '/../vendor/autoload.php'; 

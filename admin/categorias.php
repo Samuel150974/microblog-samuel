@@ -3,6 +3,8 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Microblog\Helpers\Utils;
 use Microblog\Services\CategoriaServico;
+use Microblog\Auth\ControleDeAcesso;
+ControleDeAcesso::exigirAdmin();
 
 $mensagemErro = "";
 $listaDeCategorias = [];
