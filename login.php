@@ -1,6 +1,8 @@
 <?php
 
 require_once __DIR__ . '/vendor/autoload.php';
+
+use Microblog\Auth\ControleDeAcesso;
 use Microblog\Helpers\Utils;
 use Microblog\Services\UsuarioServico;
 
@@ -33,9 +35,16 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
         $usuario = $usuarioServico->buscarPorEmail($email);
       
         // Verificar se a senha informada não corresponde a senha existente no BD
-        if(!$usuario || !password_verify($senhaRecebida, $usuario['senha']) ){
-
+        if(!$usuario || !password_verify($senhaRecebida, $usuario['senha']) ){ header("location:login.php?dados_incorretos");
+          exit;
         }
+
+        // Usuário existe e senha correta? Faz o processo de login
+        ControleDeAcesso::login($usuario['id'],$usuario['nome'], $usuario['tipo']);
+
+        // E redireciona para a página admin/index
+        header("location:admin/index.php");
+        exit;
     } catch (Throwable $e) {
         Utils::registrarLog($e);
         header("location:login.php?erro");
@@ -43,7 +52,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
     }
 
-     Utils::dump($usuario);
+
+     
 }
 
 
@@ -68,8 +78,8 @@ require_once __DIR__ . '/includes/cabecalho.php'; ?>
         <form action="" method="post" id="form-login" class="mx-auto w-50">
          <!-- Se existir alguma mensagem na variável $feedback, mostramos a mensagem para a pessoa. -->
         <?php if(isset($feedback)): ?>
-            <p class="my-2 alert alert-warning text-center"> Preencha com E-mail e Senha </p>
-             <?= Utils::escaparHtml($feedback) ?>
+            <p class="my-2 alert alert-warning text-center"> <?= Utils::escaparHtml($feedback) ?> </p>
+            
           <?php endif; ?>
             <div class="mb-3">
                 <label for="email" class="form-label">E-mail:</label>
