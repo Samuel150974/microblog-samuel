@@ -2,6 +2,7 @@
 
 require_once __DIR__ . '/vendor/autoload.php';
 use Microblog\Helpers\Utils;
+use Microblog\Services\UsuarioServico;
 
 /* Mensagens relacionadas ao processo de login/logout */
 if (isset($_GET["campos_obrigatorios"])) {
@@ -19,14 +20,32 @@ if (isset($_GET["campos_obrigatorios"])) {
 
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
     $email = Utils::normalizarEntrada($_POST['email'] ?? '', 'email');
-    $senhaRecebida = $_POST['senha'] ?? ''
+    $senhaRecebida = $_POST['senha'] ?? '';
 
         if($email === '' || $senhaRecebida === ''){
          header("location:login.php?campos_obrigatorios");
          exit;
     }
        
+    try{
+        // Buscar o usuário no BD através do e-mail informado
+        $usuarioServico = new UsuarioServico();
+        $usuario = $usuarioServico->buscarPorEmail($email);
+      
+        // Verificar se a senha informada não corresponde a senha existente no BD
+        if(!$usuario || !password_verify($senhaRecebida, $usuario['senha']) ){
+
+        }
+    } catch (Throwable $e) {
+        Utils::registrarLog($e);
+        header("location:login.php?erro");
+        exit;
+
+    }
+
+     Utils::dump($usuario);
 }
+
 
 
 
@@ -49,8 +68,9 @@ require_once __DIR__ . '/includes/cabecalho.php'; ?>
         <form action="" method="post" id="form-login" class="mx-auto w-50">
          <!-- Se existir alguma mensagem na variável $feedback, mostramos a mensagem para a pessoa. -->
         <?php if(isset($feedback)): ?>
-            <p class="my-2 alert alert-warning text-center"></p>
-
+            <p class="my-2 alert alert-warning text-center"> Preencha com E-mail e Senha </p>
+             <?= Utils::escaparHtml($feedback) ?>
+          <?php endif; ?>
             <div class="mb-3">
                 <label for="email" class="form-label">E-mail:</label>
                 <input autofocus class="form-control" type="email" id="email" name="email" autocomplete="username">
