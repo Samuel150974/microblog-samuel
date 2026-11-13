@@ -4,6 +4,7 @@ use Microblog\Enums\Destaque;
 use Microblog\Services\CategoriaServico;
 use Microblog\Helpers\Utils;
 use Microblog\Helpers\Validacoes;
+use Microblog\Models\Noticia;
 
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -50,6 +51,9 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
             // Processo da imagem 
             $nomeDaImagemEnviada = Utils::upload($_FILES['imagem'] ?? null);
+
+            // Criando o objeto com dados da nova notícia
+            $noticia = new Noticia($titulo, $texto, $resumo, $nomeDaImagemEnviada,$destaqueEnum, $idUsuario, $categoria);
              
          
     } catch (InvalidArgumentException $e) {
