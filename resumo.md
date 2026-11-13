@@ -1,33 +1,25 @@
-# Resumo do histórico da branch
+Resumo do histórico da branch
+Branch analisada: 01_aula-0311
+Período dos commits: 03/11/2026
 
-## Contexto
+Principais pontos trabalhados
+Estrutura inicial do Microblog (8d19eeb)
+Foi criado o portal didático em PHP para notícias, com áreas pública e administrativa, telas e operações de gestão, conexão PDO com MySQL/MariaDB, modelos, enums, helpers, materiais SQL e conteúdo inicial.
 
-Este resumo considera os commits da branch `01_aula_0311''` que não estão em `main`, até o commit `82a32ad` (03/11/2026). Nesse intervalo foram identificados quatro commits, com foco na organização das classes PHP e na listagem de usuários no painel administrativo.
+Namespaces e autoload do Composer (bdc25f5)
+Foi configurado o mapeamento PSR-4 Microblog\\ para src/, adicionados namespaces às classes e enums e incluído vendor/ no .gitignore.
 
-## Principais pontos trabalhados
+Serviço de usuários (b248e13, c3d5740)
+Foi criado UsuarioServico, ligado à conexão compartilhada do banco, e implementado listarTodos() para buscar usuários ordenados pelo nome. Erros PDO são registrados e convertidos em uma exceção com mensagem genérica.
 
-### Autoload e organização do código
+Integração da listagem administrativa (e01e6e1)
+A página admin/usuarios.php passou a carregar os dados pelo serviço e apresentar um alerta amigável se a consulta falhar.
 
-- Foi adicionada a configuração do Composer para autoload PSR-4, associando o namespace `Microblog\` à pasta `src/`.
-- Os arquivos de modelos, enums e helpers passaram a declarar namespaces, com os imports necessários entre essas classes.
-- A pasta `vendor/` foi incluída no `.gitignore`, evitando versionar as dependências e arquivos gerados pelo Composer.
+Ajuste da tabela consultada (51926b1)
+A consulta foi corrigida para usar a tabela usuarios, conforme o esquema do projeto.
 
-### Serviço de usuários
+Exibição de dados reais (8398959)
+Os registros de exemplo foram substituídos pelos usuários retornados do banco. A tela agora mostra a contagem dinâmica, escapa os valores apresentados e só exibe a tabela quando o carregamento é bem-sucedido.
 
-- Foi criado `UsuarioServico`, responsável por obter a conexão com o banco de dados e listar usuários.
-- O método `listarTodos()` consulta os campos `id`, `nome`, `email` e `tipo` na tabela `usuarios`, ordenando o resultado pelo nome.
-- Falhas de consulta são registradas no log e convertidas em uma mensagem de erro amigável para a camada de apresentação.
-
-### Painel administrativo
-
-- A página de usuários deixou de exibir linhas estáticas de exemplo e passou a carregar os dados por meio do serviço.
-- O contador do painel agora reflete a quantidade retornada pela consulta.
-- A página apresenta uma mensagem quando ocorre erro ao carregar os usuários e escapa valores exibidos no HTML.
-- As ações de atualizar e excluir continuam disponíveis para cada usuário listado.
-
-## Commits considerados
-
-1. `f101f9c` — Adicionar autoloading PSR-4 do Composer.
-2. `0a5c5ab` — Adiciona serviço de usuário.
-3. `d46b48a` — Adicionar listagem de usuário com tratamento de erros.
-4. `82a32ad` — Listar usuários dinamicamente no painel de administração.
+Estado resultante
+A branch evoluiu de uma base funcional de portal de notícias para incluir o carregamento dos usuários reais na tela administrativa, com tratamento de falha e integração via serviço. O foco dos commits após a estrutura inicial foi a listagem de usuários; não houve, nesse histórico, implementação completa das demais operações de persistência.
