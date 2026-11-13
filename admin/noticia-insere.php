@@ -1,4 +1,34 @@
-<?php require_once __DIR__ . '/../includes/cabecalho-admin.php'; ?>
+<?php
+
+use Microblog\Enums\Destaque;
+use Microblog\Services\CategoriaServico;
+use Microblog\Helpers\Utils;
+
+require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../includes/cabecalho-admin.php';
+
+// Capturando o id do usuário logado, ao qual a notícia que será inserida pertencerá
+$idUsuario = $_SESSION['id'];
+
+$mensagemErro = '';
+$listaDeCategorias = [];
+$titulo = '';
+$texto = '';
+$resumo = '';
+$destaque = Destaque::NAO->value;
+$categoria = '';
+$categoriasCarregadas = false;
+
+// Carregamento das categorias
+try {
+    $categoriaServico = new CategoriaServico();
+    $listaDeCategorias = $categoriaServico->listarTodos();
+    $categoriasCarregadas = true; // flag/sinalização de que deu tudo certo
+} catch (Throwable $e) {
+    Utils::registrarLog($e);
+    $mensagemErro = "Não foi possível carregar as categorias";
+}
+?>
 
 <div class="row">
     <article class="col-12 bg-white rounded shadow my-1 py-4">
