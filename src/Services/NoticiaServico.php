@@ -28,7 +28,7 @@ final class NoticiaServico
             $consulta->bindValue(":texto", $noticia->getTexto());
             $consulta->bindValue(":resumo", $noticia->getResumo());
             $consulta->bindValue(":imagem", $noticia->getImagem());
-            $consulta->bindValue(":destaque", $noticia->getDestaque());
+            $consulta->bindValue(":destaque", $noticia->getDestaque()->value);
             $consulta->bindValue(":usuario_id", $noticia->getUsuarioId());
             $consulta->bindValue(":categoria_id", $noticia->getCategoriaId());
 
