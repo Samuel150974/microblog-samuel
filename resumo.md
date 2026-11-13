@@ -1,22 +1,26 @@
-Resumo do histórico da branch
-Branch analisada: 03_aula-0511
+# Resumo do histórico da branch
 
-Período dos commits: 03/11/2026 a 05/11/2026
+Branch analisada: `06_aula-1211`
 
-Principais pontos trabalhados
-Estrutura inicial do Microblog (8d19eeb)
-Foi criado o portal didático em PHP para notícias, com áreas pública e administrativa, telas e operações de gestão, conexão PDO com MySQL/MariaDB, modelos, enums, helpers, materiais SQL e conteúdo inicial.
+Período dos commits: 10/11/2026 a 12/11/2026
 
-Namespaces e autoload do Composer (bdc25f5)
-Foi configurado o mapeamento PSR-4 Microblog\\ para src/, adicionados namespaces às classes e enums e incluído vendor/ no .gitignore.
+## Principais pontos trabalhados
 
-Serviço e listagem de usuários (b248e13, c3d5740, e01e6e1, 51926b1, 8398959, 651b4a0) Foi criado UsuarioServico, ligado à conexão compartilhada do banco, e implementada a consulta de usuários na tabela usuarios. A área administrativa passou a exibir os registros reais, com contagem dinâmica e escape dos valores. Falhas no carregamento são registradas no log e apresentadas ao usuário por uma mensagem genérica.
+1. **Ativação do fluxo de autenticação (`007e174`, `4089c21`, `5f49e17`, `92b0850`)**
+   Foi implementada a busca de usuário por e-mail no login, a validação dos dados informados e o fluxo completo de autenticação. Em seguida, foi adicionado o logout do administrador e a lógica de sessão para manter o usuário autenticado e redirecioná-lo em caso de saída.
 
-Cadastro de usuários (dffba45, 1465307, 5d7c2b8, 7e83f75, 3d1542e) O serviço ganhou inserir(Usuario $usuario), usando parâmetros preparados e os dados obtidos pelos getters do modelo. O ID do modelo Usuario passou a ser anulável e opcional, para permitir a criação de contas sem ID prévio. O formulário administrativo normaliza e valida nome, e-mail, senha e tipo de conta; codifica a senha, converte o tipo para TipoUsuario e persiste o novo usuário. Em caso de sucesso, redireciona à listagem; erros de validação são exibidos e falhas inesperadas são registradas e comunicadas com mensagem genérica. Os campos de nome, e-mail e tipo são preservados após erros, e os valores apresentados são escapados.
+2. **Proteção por sessão e controle de acesso (`703c860`, `81fe9e4`, `834fdc0`, `3e6d1b6`, `90add18`, `2b4f842`, `e3b7c54`, `4ab3a7c`)**
+   A classe `ControleDeAcesso` foi ampliada para iniciar e encerrar a sessão, exigir login, verificar o tipo do usuário e controlar o acesso às páginas administrativas. O cabeçalho administrativo passou a bloquear usuários sem autenticação, e as telas de gerenciamento passaram a exigir perfil de administrador. Também foi incluída a verificação do tipo de conta na sessão e a restrição dos links administrativos para quem não tem permissão.
 
-Busca e preenchimento do formulário de edição (c23e544, 40ffeb8, 42f533a) UsuarioServico ganhou buscarPorId(int $id), que consulta os dados da conta e retorna null quando não encontra registro; falhas de banco são registradas e convertidas em erro genérico. A página de edição normaliza e verifica o ID recebido pela URL, carrega a conta, informa quando não há usuário e preenche nome, e-mail e tipo com os dados encontrados, escapando os valores exibidos.
+3. **Exibição de contexto e feedback do usuário (`3eae4c9`, `f200330`)**
+   As páginas administrativas passaram a exibir detalhes da sessão atual, como nome e tipo de usuário, e o autoload foi carregado antes das verificações de acesso administrativo para garantir que as classes necessárias estejam disponíveis. Isso melhorou o feedback visual e a consistência do fluxo de autenticação.
 
-Atualização de usuários (8b6ee29, 4aea467, d578a5f) UsuarioServico ganhou o método atualizar(Usuario $usuario), que persiste nome, e-mail, senha e tipo por meio de uma instrução preparada e registra falhas de banco. O formulário de edição passou a processar envios POST, normalizar e validar nome, e-mail e tipo, criar o modelo e chamar o serviço; em caso de sucesso, redireciona à listagem. A senha atual é mantida quando o campo fica em branco. Quando preenchida, a nova senha é validada; se for igual à atual, mantém-se o hash existente, e, se diferente, é armazenada codificada. Erros de validação são apresentados, e falhas inesperadas são registradas e comunicadas com mensagem genérica.
+4. **Gerenciamento de usuários e segurança de exclusão (`65f5568`, `3fc6ff7`, `3a339ea`)**
+   Foi adicionado o método de serviço para exclusão de usuários e implementada a operação completa de remoção. A partir daí, também foi bloqueada a exclusão da própria conta para evitar inconsistências de sessão e manutenção do usuário administrador principal.
 
-Estado resultante
-A branch inclui listagem e cadastro persistidos de usuários, além do fluxo de edição que busca os dados existentes, valida as alterações e as persiste. As senhas em branco permanecem inalteradas; novas senhas são validadas e codificadas. Falhas técnicas na listagem, no cadastro, na busca ou na atualização são registradas no log e apresentadas ao usuário por mensagens apropriadas.
+5. **Atualização de perfil do usuário (`0ee4efd`)**
+   O painel administrativo recebeu a funcionalidade de atualizar os dados do próprio perfil, permitindo ao usuário alterar informações cadastrais e manter a experiência consistente com o restante do sistema. A operação foi integrada ao fluxo de sessão e à área administrativa.
+
+## Estado resultante
+
+A branch inclui um fluxo de autenticação funcional com busca por e-mail, validação de campos, login, logout e controle de sessão. O acesso às áreas administrativas passou a depender do tipo de usuário e da presença de dados de sessão válidos, com bloqueios para visitantes e usuários sem permissão. Também houve melhorias na experiência do painel, como a exibição do contexto da sessão, restrição de links e proteção contra a exclusão do próprio usuário. A área de administração está pronta para operar com autenticação e permissões por perfil, além de permitir atualização do perfil do usuário logado.
