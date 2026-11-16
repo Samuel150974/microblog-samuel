@@ -1,2 +1,12 @@
 
 
+[2026-11-16 11:02:41]
+Arquivo: C:\xampp\htdocs\microblog-samuel\src\Database\ConexaoBD.php
+Linha: 25
+Mensagem: SQLSTATE[HY000] [2006] MySQL server has gone away
+
+[2026-11-16 11:02:41]
+Arquivo: C:\xampp\htdocs\microblog-samuel\src\Database\ConexaoBD.php
+Linha: 38
+Mensagem: Erro ao conectar ao banco de dados. Contate o suporte.
+

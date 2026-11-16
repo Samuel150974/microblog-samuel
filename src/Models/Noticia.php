@@ -15,7 +15,7 @@ final class Noticia
     private string $imagem;
     private Destaque $destaque;
     private int $usuarioId;
-    private int $categoriaId;
+    private ?int $categoriaId;
 
     public function __construct(
         string $titulo,
@@ -24,7 +24,7 @@ final class Noticia
         string $imagem,
         Destaque $destaque,
         int $usuarioId,
-        int $categoriaId,
+        ?int $categoriaId,
         ?int $id = null,
         ?string $data = null
     ) {
@@ -72,7 +72,7 @@ final class Noticia
     {
         return $this->usuarioId;
     }
-    public function getCategoriaId(): int
+    public function getCategoriaId(): ?int
     {
         return $this->categoriaId;
     }

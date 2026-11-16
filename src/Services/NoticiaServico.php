@@ -95,6 +95,77 @@ final class NoticiaServico
         }
 
     }
+
+    public function atualizar(Noticia $noticia, TipoUsuario $tipoUsuario): void
+    {
+        if ($noticia->getId() === null) {
+            throw new \InvalidArgumentException("A notícia precisa ter um ID para ser atualizada.");
+        }
+
+        $sql = "UPDATE noticias
+                SET titulo = :titulo, texto = :texto, resumo = :resumo,
+                    imagem = :imagem, destaque = :destaque, categoria_id = :categoria_id
+                WHERE id = :id";
+
+        if ($tipoUsuario === TipoUsuario::EDITOR) {
+            $sql .= " AND usuario_id = :usuario_id";
+        }
+
+        try {
+            $consulta = $this->conexao->prepare($sql);
+            $consulta->bindValue(":titulo", $noticia->getTitulo());
+            $consulta->bindValue(":texto", $noticia->getTexto());
+            $consulta->bindValue(":resumo", $noticia->getResumo());
+            $consulta->bindValue(":imagem", $noticia->getImagem());
+            $consulta->bindValue(":destaque", $noticia->getDestaque()->value);
+            $consulta->bindValue(
+                ":categoria_id",
+                $noticia->getCategoriaId(),
+                $noticia->getCategoriaId() === null ? PDO::PARAM_NULL : PDO::PARAM_INT
+            );
+            $consulta->bindValue(":id", $noticia->getId(), PDO::PARAM_INT);
+
+            if ($tipoUsuario === TipoUsuario::EDITOR) {
+                $consulta->bindValue(":usuario_id", $noticia->getUsuarioId(), PDO::PARAM_INT);
+            }
+
+            $consulta->execute();
+
+            if ($consulta->rowCount() === 0 && $this->buscarPorId($noticia->getId(), $noticia->getUsuarioId(), $tipoUsuario) === null) {
+                throw new Exception("Notícia não encontrada ou sem permissão para atualizá-la.");
+            }
+        } catch (PDOException $e) {
+            Utils::registrarLog($e);
+            throw new Exception("Erro ao atualizar notícia");
+        }
+    }
+
+    public function excluir(int $id, int $usuarioId, TipoUsuario $tipoUsuario): void
+    {
+        $sql = "DELETE FROM noticias WHERE id = :id";
+
+        if ($tipoUsuario === TipoUsuario::EDITOR) {
+            $sql .= " AND usuario_id = :usuario_id";
+        }
+
+        try {
+            $consulta = $this->conexao->prepare($sql);
+            $consulta->bindValue(":id", $id, PDO::PARAM_INT);
+
+            if ($tipoUsuario === TipoUsuario::EDITOR) {
+                $consulta->bindValue(":usuario_id", $usuarioId, PDO::PARAM_INT);
+            }
+
+            $consulta->execute();
+
+            if ($consulta->rowCount() !== 1) {
+                throw new Exception("Notícia não encontrada ou sem permissão para excluí-la.");
+            }
+        } catch (PDOException $e) {
+            Utils::registrarLog($e);
+            throw new Exception("Erro ao excluir notícia");
+        }
+    }
     
 }
 

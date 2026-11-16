@@ -24,7 +24,7 @@ Microblog é um portal didático de notícias em PHP, com páginas públicas e u
 - `src/Enums/`: tipos de usuário e destaque.
 - `src/Helpers/`: normalização, escape, validação, upload, senha, datas e log.
 - `src/Models/`: entidades `Usuario`, `Categoria` e `Noticia`.
-- `src/Services/`: consultas e operações de banco por entidade.
+- `src/Services/`: consultas e operações de banco por entidade; `NoticiaServico` lista, busca, insere, atualiza e exclui notícias.
 - `admin/`: páginas e ações do painel; `admin/js/` contém scripts de confirmação e contador.
 - Raiz: páginas públicas, incluindo início, notícia, notícias por categoria, busca e login.
 - `includes/`: cabeçalhos, rodapés e blocos compartilhados.
@@ -44,16 +44,17 @@ Compare sempre as colunas, tipos e constraints do dump com os modelos, serviços
 ## Regras do domínio e fluxos
 
 - `TipoUsuario` tem `ADMIN` e `EDITOR`; `Destaque` tem `SIM` e `NAO`. Armazene e compare seus valores de string usando `->value`; use `from()` ou `tryFrom()` para conversões apropriadas.
-- Ambos os tipos de usuário autenticados podem gerenciar suas próprias notícias. Admins podem listar todas as notícias e ver o autor; editores devem ver somente as próprias, sem a coluna de autor. A consulta está em `NoticiaServico::listarTodos()` e é chamada por `admin/noticias.php`.
+- Ambos os tipos de usuário autenticados podem gerenciar suas próprias notícias. Admins podem listar, atualizar e excluir todas as notícias e ver o autor; editores devem ver e gerenciar somente as próprias, sem a coluna de autor. `NoticiaServico::listarTodos()` e `buscarPorId()` aplicam o escopo de leitura; `atualizar()` e `excluir()` também restringem as operações de editores no SQL.
+- `admin/noticia-atualiza.php` carrega a notícia pelo ID, valida os campos e persiste as alterações por POST. A imagem existente é mantida se nenhum novo arquivo for enviado; a categoria pode ficar sem valor, conforme a nulabilidade de `categoria_id` no banco e no modelo `Noticia`.
+- `admin/noticia-exclui.php` recebe o ID da notícia, exclui e redireciona para `admin/noticias.php`. A listagem apresenta a confirmação pelo modal compartilhado em `admin/js/confirm.js`; a autorização da exclusão é aplicada também no serviço.
 - O painel deve exigir login. Ações administrativas devem exigir permissão de admin quando aplicável. `ControleDeAcesso` mantém `id`, `nome` e `tipo` na sessão.
 - Páginas PHP administrativas carregam `vendor/autoload.php` antes de instanciar ou chamar classes do namespace `Microblog`.
-- `admin/noticia-atualiza.php` está atualmente com formulário e valores de exemplo; verifique sua implementação real antes de tratá-la como fluxo funcional.
 
 ## Convenções para mudanças
 
 - Namespace e caminho seguem PSR-4: por exemplo, `Microblog\Services\NoticiaServico` fica em `src/Services/NoticiaServico.php`.
 - Use nomes em português conforme o padrão existente, classes em PascalCase e métodos/propriedades/variáveis em camelCase.
-- Modelos têm propriedades tipadas privadas e getters. Serviços encapsulam SQL e recebem modelos nas operações de escrita quando esse padrão fizer sentido.
+- Modelos têm propriedades tipadas privadas e getters. `Noticia` permite `categoriaId` nulo, de acordo com o banco; serviços encapsulam SQL e recebem modelos nas operações de escrita quando esse padrão fizer sentido.
 - Use PDO e parâmetros preparados para valores. Admins e editores devem ter escopos de acesso distintos; não confie apenas em esconder links ou colunas na interface.
 - Preserve os padrões de validação, mensagens em português, escape de saída com `Utils::escaparHtml()` e feedback dos formulários.
 - Em falhas de banco, registre a exceção completa com `Utils::registrarLog()` e mostre ao usuário uma mensagem genérica; erros esperados de validação podem ser mostrados diretamente.
