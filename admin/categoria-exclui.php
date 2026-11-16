@@ -3,10 +3,10 @@ use Microblog\Helpers\Utils;
 
 use Microblog\Services\CategoriaServico;
 use Microblog\Auth\ControleDeAcesso;
+
+require_once __DIR__ . '/../vendor/autoload.php';
+
 ControleDeAcesso::exigirAdmin();
-
-
-require_once __DIR__ . '/../vendor/autoload.php'; 
 
 $id = Utils::normalizarEntrada($_GET['id'] ?? null, 'inteiro');
 Utils::verificarId($id);
