@@ -1,16 +1,21 @@
 <?php
 
-class Noticia
+
+namespace Microblog\Models;
+
+use Microblog\Enums\Destaque;
+
+final class Noticia
 {
-    private int $id;
-    private string $data;
+    private ?int $id;
+    private ?string $data;
     private string $titulo;
     private string $texto;
     private string $resumo;
     private string $imagem;
     private Destaque $destaque;
     private int $usuarioId;
-    private int $categoriaId;
+    private ?int $categoriaId;
 
     public function __construct(
         string $titulo,
@@ -19,9 +24,9 @@ class Noticia
         string $imagem,
         Destaque $destaque,
         int $usuarioId,
-        int $categoriaId,
-        int $id,
-        string $data
+        ?int $categoriaId,
+        ?int $id = null,
+        ?string $data = null
     ) {
         $this->titulo = $titulo;
         $this->texto = $texto;
@@ -67,7 +72,7 @@ class Noticia
     {
         return $this->usuarioId;
     }
-    public function getCategoriaId(): int
+    public function getCategoriaId(): ?int
     {
         return $this->categoriaId;
     }
