@@ -6,6 +6,8 @@ Este arquivo reúne o contexto necessário para trabalhar no projeto sem depende
 
 Microblog é um portal didático de notícias em PHP, com páginas públicas e um painel administrativo. O backend usa orientação a objetos, MySQL/MariaDB via PDO e autoload PSR-4 do Composer. A interface usa HTML, CSS, JavaScript e Bootstrap carregado por CDN.
 
+O projeto já está com fluxos públicos dinâmicos em andamento: a página inicial carrega notícias em destaque, a página de notícia exibe o conteúdo completo com autor e data formatada, as páginas por categoria usam o banco para listar notícias por `categoria_id` e a busca de notícias funciona via `resultados.php` + `js/busca.js` usando requisições `POST` assíncronas.
+
 ## Ambiente e execução
 
 - Requer PHP moderno. O projeto usa enums e tipos como `mixed`; o README especifica PHP 8.5+.
@@ -24,10 +26,10 @@ Microblog é um portal didático de notícias em PHP, com páginas públicas e u
 - `src/Enums/`: tipos de usuário e destaque.
 - `src/Helpers/`: normalização, escape, validação, upload, senha, datas e log.
 - `src/Models/`: entidades `Usuario`, `Categoria` e `Noticia`.
-- `src/Services/`: consultas e operações de banco por entidade; `NoticiaServico` lista, busca, insere, atualiza e exclui notícias.
+- `src/Services/`: consultas e operações de banco por entidade; `NoticiaServico` lista, busca, insere, atualiza e exclui notícias e também traz operações públicas para destaques, busca e categorias.
 - `admin/`: páginas e ações do painel; `admin/js/` contém scripts de confirmação e contador.
 - Raiz: páginas públicas, incluindo início, notícia, notícias por categoria, busca e login.
-- `includes/`: cabeçalhos, rodapés e blocos compartilhados.
+- `includes/`: cabeçalhos, rodapés e blocos compartilhados; `includes/cabecalho.php` hoje monta o menu de categorias a partir do banco.
 - `images/`, `css/`, `js/`: assets públicos; `logs/erros.log`: log de exceções.
 - `_materiais/`: dumps SQL e material didático.
 
@@ -45,6 +47,7 @@ Compare sempre as colunas, tipos e constraints do dump com os modelos, serviços
 
 - `TipoUsuario` tem `ADMIN` e `EDITOR`; `Destaque` tem `SIM` e `NAO`. Armazene e compare seus valores de string usando `->value`; use `from()` ou `tryFrom()` para conversões apropriadas.
 - Ambos os tipos de usuário autenticados podem gerenciar suas próprias notícias. Admins podem listar, atualizar e excluir todas as notícias e ver o autor; editores devem ver e gerenciar somente as próprias, sem a coluna de autor. `NoticiaServico::listarTodos()` e `buscarPorId()` aplicam o escopo de leitura; `atualizar()` e `excluir()` também restringem as operações de editores no SQL.
+- Fluxos públicos: `index.php` lista notícias em destaque; `noticia.php` carrega a notícia completa pelo `id` e mostra data em `dd/mm/yyyy` e autor com fallback `Equipe Microblog`; `noticias-por-categoria.php` filtra por categoria; `resultados.php` processa a busca por termo e `js/busca.js` faz a requisição assíncrona para o servidor.
 - `admin/noticia-atualiza.php` carrega a notícia pelo ID, valida os campos e persiste as alterações por POST. A imagem existente é mantida se nenhum novo arquivo for enviado; a categoria pode ficar sem valor, conforme a nulabilidade de `categoria_id` no banco e no modelo `Noticia`.
 - `admin/noticia-exclui.php` recebe o ID da notícia, exclui e redireciona para `admin/noticias.php`. A listagem apresenta a confirmação pelo modal compartilhado em `admin/js/confirm.js`; a autorização da exclusão é aplicada também no serviço.
 - O painel deve exigir login. Ações administrativas devem exigir permissão de admin quando aplicável. `ControleDeAcesso` mantém `id`, `nome` e `tipo` na sessão.
@@ -58,6 +61,7 @@ Compare sempre as colunas, tipos e constraints do dump com os modelos, serviços
 - Use PDO e parâmetros preparados para valores. Admins e editores devem ter escopos de acesso distintos; não confie apenas em esconder links ou colunas na interface.
 - Preserve os padrões de validação, mensagens em português, escape de saída com `Utils::escaparHtml()` e feedback dos formulários.
 - Em falhas de banco, registre a exceção completa com `Utils::registrarLog()` e mostre ao usuário uma mensagem genérica; erros esperados de validação podem ser mostrados diretamente.
+- Para páginas públicas, o menu de categorias e os listados devem usar a base e não conteúdo fixo. A busca pública deve procurar em `titulo`, `resumo` e `texto` e devolver links para `noticia.php?id=`.
 - Faça mudanças pequenas e relacionadas ao pedido. Atualize documentação diretamente afetada e valide os arquivos e fluxos modificados.
 - Preserve configurações e alterações locais que não façam parte da tarefa; não reverta mudanças preexistentes.
 
